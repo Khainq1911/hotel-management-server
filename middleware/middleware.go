@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -16,7 +17,7 @@ func AdminMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 		claims := jwt.MapClaims{}
 
 		_, err := jwt.ParseWithClaims(token, claims, func(*jwt.Token) (interface{}, error) {
-			return []byte("Ftghghttfhgt44"), nil
+			return []byte(os.Getenv("SECRET_KEY")), nil
 		})
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, "unable to parse token")

@@ -4,22 +4,38 @@ import (
 	"booking-website-be/database"
 	"booking-website-be/handler"
 	"booking-website-be/repository"
+	"log"
+	"net/http"
+	"os"
+	"strconv"
 
 	"booking-website-be/router"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	_ "github.com/lib/pq"
+	"github.com/lpernett/godotenv"
 )
 
 func main() {
-	sql := &database.Sql{
-		Host:     "localhost",
-		User:     "postgres",
-		Password: "postgres",
-		Port:     5432,
-		Dbname:   "booking-room-hotel",
+
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Error loading .env file")
 	}
+
+	DB_PORT, err := strconv.Atoi(os.Getenv("DB_PORT"))
+	if err != nil {
+		log.Fatal("Error loading Port")
+	}
+
+	sql := &database.Sql{
+		Host:     os.Getenv("DB_HOST"),
+		User:     os.Getenv("DB_USER"),
+		Password: os.Getenv("DB_PASSWORD"),
+		Port:     DB_PORT,
+		Dbname:   os.Getenv("DB_NAME"),
+	}
+
 	sql.Connect()
 	defer sql.Close()
 
@@ -66,5 +82,9 @@ func main() {
 
 	api.SetupRouter()
 
-	e.Logger.Fatal(e.Start(":1912"))
+	e.GET("/", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Hello World!")
+	})
+
+	e.Logger.Fatal(e.Start(":" + os.Getenv("PORT")))
 }

@@ -145,48 +145,55 @@ func (u *EmployeeHandler) CheckLogin(ctx echo.Context) error {
 	req := model.User{}
 
 	if err := ctx.Bind(&req); err != nil {
-		return ctx.JSON(http.StatusBadRequest, model.ResWithOutData{
-			StatusCode: http.StatusBadRequest,
-			Message:    "failed to bind data",
+		return ctx.JSON(http.StatusUnprocessableEntity, model.ResWithOutData{
+			StatusCode: http.StatusUnprocessableEntity,
+			Message:    "Unable to process request data",
 		})
 	}
 
 	data, err := u.EmployeeRepo.CheckLogin(ctx.Request().Context(), req.Username)
 	if err != nil {
 		fmt.Println(err)
-		return ctx.JSON(http.StatusBadRequest, model.ResWithOutData{
-			StatusCode: http.StatusBadRequest,
-			Message:    "User is not exist",
+		return ctx.JSON(http.StatusNotFound, model.ResWithOutData{
+			StatusCode: http.StatusNotFound,
+			Message:    "No user found with the provided credentials",
 		})
 	}
 
 	if req.PassWord != data[0].PassWord {
-		return ctx.JSON(http.StatusUnauthorized, model.ResWithOutData{
-			StatusCode: http.StatusUnauthorized,
-			Message:    "password is not true",
+		return ctx.JSON(http.StatusForbidden, model.ResWithOutData{
+			StatusCode: http.StatusForbidden,
+			Message:    "Invalid password provided",
 		})
 	}
 
 	claims := jwt.MapClaims{
-		"employee_id":  data[0].EmployeeID,
-		"fullname":     data[0].FullName,
-		"email":        data[0].Email,
-		"phone_number": data[0].PhoneNumber,
-		"is_admin":     data[0].IsAdmin,
-		"exp":          time.Now().Add(time.Hour * 2).Unix(),
+		"is_admin": data[0].IsAdmin,
+		"exp":      time.Now(),
+		"iat":      time.Now().Add(time.Hour * 2).Unix(),
 	}
 
 	token, err := security.GenToken(&claims, ctx.Echo().AcquireContext())
 	if err != nil {
 		fmt.Println(err)
-		return ctx.JSON(http.StatusBadRequest, model.ResWithOutData{
-			StatusCode: http.StatusBadRequest,
-			Message:    "failed to gentoken",
+		return ctx.JSON(http.StatusInternalServerError, model.ResWithOutData{
+			StatusCode: http.StatusInternalServerError,
+			Message:    "Token generation failed",
 		})
 	}
 
-	return ctx.JSON(http.StatusOK, echo.Map{
-		"accessToken": token,
-	})
+	dataResponse := model.LoginResponse{
+		User: model.UserData{
+			Name:  data[0].FullName,
+			Email: data[0].Email,
+			Id:    data[0].EmployeeID,
+		},
+		AccessToken: token,
+	}
 
+	return ctx.JSON(http.StatusOK, model.Response{
+		StatusCode: http.StatusOK,
+		Message:    "Authentication completed successfully",
+		Data:       dataResponse,
+	})
 }

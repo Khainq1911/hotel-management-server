@@ -6,6 +6,8 @@ import (
 
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
+
+	
 )
 
 type Api struct {
@@ -26,11 +28,11 @@ func (api *Api) SetupRouter() {
 	}))
 	adminGroup.Use(middleware.AdminMiddleware)
 	//customer routes
-	api.Echo.POST("/customer/create", api.AccountHandler.CreateCustomer)
-	adminGroup.GET("/customers", api.AccountHandler.ViewCusList)
-	api.Echo.GET("/customers/:customer_id", api.AccountHandler.ViewCusDetail)
-	api.Echo.PUT("/customers/update/:customer_id", api.AccountHandler.UpdateCus)
-	api.Echo.PUT("/customers/delete/:customer_id", api.AccountHandler.DeleteCus)
+	api.Echo.POST("/customer", api.AccountHandler.CreateCustomer)
+	adminGroup.GET("/customer", api.AccountHandler.ViewCusList)
+	api.Echo.GET("/customer/:customer_id", api.AccountHandler.ViewCusDetail)
+	api.Echo.PUT("/customer/:customer_id", api.AccountHandler.UpdateCus)
+	api.Echo.PUT("/customer/delete/:customer_id", api.AccountHandler.DeleteCus)
 
 	//typeroom routes
 	api.Echo.POST("typeRoom/add", api.TypeRoomHandler.AddTypeRoom)
@@ -50,8 +52,8 @@ func (api *Api) SetupRouter() {
 	//rooms routes
 	api.Echo.GET("rooms", api.RoomHandler.ViewListRoom)
 	api.Echo.GET("rooms/:room_id", api.RoomHandler.ViewDetailRoom)
-	api.Echo.POST("/rooms/add", api.RoomHandler.AddRoom)
-	api.Echo.PUT("/rooms/:room_id/update", api.RoomHandler.UpdateRoom)
+	api.Echo.POST("/rooms", api.RoomHandler.AddRoom)
+	api.Echo.PUT("/rooms/:room_id", api.RoomHandler.UpdateRoom)
 	api.Echo.PUT("/rooms/:room_id/delete", api.RoomHandler.DeleteRoom)
 
 	//booking
