@@ -3,11 +3,10 @@ package router
 import (
 	"booking-website-be/handler"
 	"booking-website-be/middleware"
+	"os"
 
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
-
-	
 )
 
 type Api struct {
@@ -22,11 +21,13 @@ type Api struct {
 }
 
 func (api *Api) SetupRouter() {
-	adminGroup := api.Echo.Group("/admin")
-	adminGroup.Use(echojwt.WithConfig(echojwt.Config{
-		SigningKey: []byte("Ftghghttfhgt44"),
+	adminGroup := api.Echo.Group("/admin", echojwt.WithConfig(echojwt.Config{
+		SigningKey: []byte(os.Getenv("SECRET_KEY")),
+	}), middleware.AdminMiddleware)
+
+	protectedRoute := api.Echo.Group("", echojwt.WithConfig(echojwt.Config{
+		SigningKey: []byte(os.Getenv("SECRET_KEY")),
 	}))
-	adminGroup.Use(middleware.AdminMiddleware)
 	//customer routes
 	api.Echo.POST("/customer", api.AccountHandler.CreateCustomer)
 	adminGroup.GET("/customer", api.AccountHandler.ViewCusList)
@@ -50,11 +51,11 @@ func (api *Api) SetupRouter() {
 	api.Echo.PUT("/employee/:employee_id/delete", api.EmployeeHandler.DeleteEmp)
 
 	//rooms routes
-	api.Echo.GET("rooms", api.RoomHandler.ViewListRoom)
-	api.Echo.GET("rooms/:room_id", api.RoomHandler.ViewDetailRoom)
-	api.Echo.POST("/rooms", api.RoomHandler.AddRoom)
-	api.Echo.PUT("/rooms/:room_id", api.RoomHandler.UpdateRoom)
-	api.Echo.PUT("/rooms/:room_id/delete", api.RoomHandler.DeleteRoom)
+	protectedRoute.GET("rooms", api.RoomHandler.ViewListRoom)
+	protectedRoute.GET("rooms/:room_id", api.RoomHandler.ViewDetailRoom)
+	adminGroup.POST("/rooms", api.RoomHandler.AddRoom)
+	adminGroup.PUT("/rooms/:room_id", api.RoomHandler.UpdateRoom)
+	adminGroup.PUT("/rooms/:room_id/delete", api.RoomHandler.DeleteRoom)
 
 	//booking
 	api.Echo.POST("/booking/create", api.BookingHandler.CreateBooking)

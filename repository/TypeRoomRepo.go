@@ -65,17 +65,15 @@ func (db *Sql) AddTypeRoomRepo(ctx context.Context, typeRoom model.TypeRoom) err
 func (db *Sql) ViewtypeRoomRepo(ctx context.Context) ([]model.SelectTypeRoom, error) {
 	data := []model.SelectTypeRoom{}
 
-	query := `select type_id,
+	query := `select 
+	type_id,
 	type_name,
 	description,
-	price_per_night,
 	max_occupancy,
-	room_size,
-	image_url,
-	status,
-	discount from typeroom where is_deleted = $1`
+	room_size
+	from typeroom `
 
-	if err := db.Sql.Db.Select(&data, query, false); err != nil {
+	if err := db.Sql.Db.Select(&data, query); err != nil {
 		return []model.SelectTypeRoom{}, err
 	}
 

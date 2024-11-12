@@ -29,24 +29,40 @@ func NewRoomRepo(sql *database.Sql) RoomRepo {
 // add type room
 func (db *RoomSql) AddRoomRepo(ctx context.Context, room model.AddRoom) error {
 	query := `insert into room (
-	room_name,
-	type_id, 
-	floor,
-	status,
-	price_override,
-	cleaning_status,
-	check_in_time,
-	check_out_time,
-	current_guest,
-	note, 
-	createtime,
-	createby) values ( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-	`
+		room_name,
+		type_id, 
+		floor,
+		booking_status,
+		price_per_hour,
+		price_per_day,
+		cleaning_status,
+		check_in_time,
+		check_out_time,
+		current_guest,
+		note, 
+		created_at,
+		created_by, 
+		updated_at,
+		updated_by) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`
 
 	current := time.Now()
 
-	if _, err := db.Sql.Db.Exec(query, room.RoomName, room.TypeID, room.Floor, room.Status, room.PriceOverride,
-		room.CleaningStatus, room.CheckInTime, room.CheckOutTime, room.CurrentGuest, room.Note, current, room.CreateBy); err != nil {
+	if _, err := db.Sql.Db.Exec(query,
+		room.RoomName,
+		room.TypeID,
+		room.Floor,
+		room.BookingStatus,
+		room.PricePerHour,
+		room.PricePerDay,
+		room.CleaningStatus,
+		room.CheckInTime,
+		room.CheckOutTime,
+		room.CurrentGuest,
+		room.Note,
+		current,
+		room.CreatedBy,
+		current,
+		room.UpdatedBy); err != nil {
 		return err
 	}
 
@@ -57,17 +73,30 @@ func (db *RoomSql) AddRoomRepo(ctx context.Context, room model.AddRoom) error {
 func (db *RoomSql) ViewListRoomRepo(ctx context.Context) ([]model.Room, error) {
 	data := []model.Room{}
 
-	query := `select room_id,
-	room_name,
-	type_id, 
-	floor,
-	status,
-	price_override,
-	cleaning_status,
-	check_in_time,
-	check_out_time,
-	current_guest,
-	note from room`
+	query := `SELECT 
+    room.room_id,
+    room.room_name,
+    room.floor,
+    room.booking_status,
+    room.price_per_day,
+	room.price_per_hour,
+    room.discount,
+    room.cleaning_status,
+    room.check_in_time,
+    room.check_out_time,
+    room.current_guest,
+    room.note,
+    room.created_at,
+    room.updated_at,
+    typeroom.type_id,
+    typeroom.type_name,
+    typeroom.description,
+    typeroom.max_occupancy,
+    typeroom.room_size
+FROM 
+    room
+JOIN 
+    typeroom ON room.type_id = typeroom.type_id `
 
 	if err := db.Sql.Db.Select(&data, query); err != nil {
 		return []model.Room{}, err
@@ -79,17 +108,30 @@ func (db *RoomSql) ViewListRoomRepo(ctx context.Context) ([]model.Room, error) {
 // view detail room
 func (db *RoomSql) ViewDetailRoomRepo(ctx context.Context, roomId string) ([]model.Room, error) {
 	data := []model.Room{}
-	query := `select 
-	room_name,
-	type_id, 
-	floor,
-	status,
-	price_override,
-	cleaning_status,
-	check_in_time,
-	check_out_time,
-	current_guest,
-	note from room where room_id = $1`
+	query := `SELECT 
+    room.room_id,
+    room.room_name,
+    room.floor,
+    room.booking_status,
+    room.price_per_day,
+	room.price_per_hour,
+    room.discount,
+    room.cleaning_status,
+    room.check_in_time,
+    room.check_out_time,
+    room.current_guest,
+    room.note,
+    room.created_at,
+    room.updated_at,
+    typeroom.type_id,
+    typeroom.type_name,
+    typeroom.description,
+    typeroom.max_occupancy,
+    typeroom.room_size
+FROM 
+    room
+JOIN 
+    typeroom ON room.type_id = typeroom.type_id where room_id = $1`
 
 	if err := db.Sql.Db.Select(&data, query, roomId); err != nil {
 		return []model.Room{}, err
@@ -100,25 +142,27 @@ func (db *RoomSql) ViewDetailRoomRepo(ctx context.Context, roomId string) ([]mod
 
 // update room
 func (db *RoomSql) UpdateRoomRepo(ctx context.Context, roomId string, room model.UpdateRoom) error {
-	query := `update room set
-	room_name = $1,
-	type_id = $2, 
-	floor = $3,
-	status = $4,
-	price_override = $5,
-	cleaning_status = $6,
-	check_in_time = $7,
-	check_out_time = $8,
-	current_guest = $9,
-	note = $10, 
-	updatetime = $11,
-	updateby = $12 where room_id = $13
-	`
+	query := `UPDATE room SET
+		room_name = $1,
+		type_id = $2, 
+		price_per_day = $3,
+		price_per_hour = $4,
+		updated_at = $5,
+		updated_by = $6,
+		discount = $7
+	WHERE room_id = $8`
+
 	current := time.Now()
 
-	if _, err := db.Sql.Db.Exec(query, room.RoomName, room.TypeID, room.Floor,
-		room.Status, room.PriceOverride, room.CleaningStatus, room.CheckInTime, room.CheckOutTime,
-		room.CurrentGuest, room.Note, current, room.UpdateBy, roomId); err != nil {
+	if _, err := db.Sql.Db.Exec(query,
+		room.RoomName,
+		room.TypeID,
+		room.PricePerDay,
+		room.PricePerHour,
+		current,
+		room.UpdatedBy,
+		room.Discount,
+		roomId); err != nil {
 		return err
 	}
 

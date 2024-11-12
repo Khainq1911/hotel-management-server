@@ -169,8 +169,8 @@ func (u *EmployeeHandler) CheckLogin(ctx echo.Context) error {
 
 	claims := jwt.MapClaims{
 		"is_admin": data[0].IsAdmin,
-		"exp":      time.Now(),
-		"iat":      time.Now().Add(time.Hour * 2).Unix(),
+		"iat":      time.Now(),
+		"exp":      time.Now().Add(time.Hour * 2).Unix(),
 	}
 
 	token, err := security.GenToken(&claims, ctx.Echo().AcquireContext())
