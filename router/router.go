@@ -52,8 +52,7 @@ func (api *Api) SetupRouter() {
 
 	//rooms routes
 	protectedRoute.GET("rooms", api.RoomHandler.ViewListRoom)
-	protectedRoute.GET("rooms/:room_id", api.RoomHandler.ViewDetailRoom)
-	adminGroup.POST("/rooms", api.RoomHandler.AddRoom)
+	adminGroup.POST("/rooms/add", api.RoomHandler.AddRoom)
 	adminGroup.PUT("/rooms/:room_id", api.RoomHandler.UpdateRoom)
 	adminGroup.PUT("/rooms/:room_id/delete", api.RoomHandler.DeleteRoom)
 

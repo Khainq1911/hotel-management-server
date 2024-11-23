@@ -191,6 +191,11 @@ func (u *EmployeeHandler) CheckLogin(ctx echo.Context) error {
 		AccessToken: token,
 	}
 
+	cookie := new(http.Cookie)
+	cookie.Name = "employee_id"
+	cookie.Value = data[0].EmployeeID
+	ctx.SetCookie((cookie))
+
 	return ctx.JSON(http.StatusOK, model.Response{
 		StatusCode: http.StatusOK,
 		Message:    "Authentication completed successfully",
