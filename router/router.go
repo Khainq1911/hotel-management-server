@@ -36,12 +36,8 @@ func (api *Api) SetupRouter() {
 	api.Echo.PUT("/customer/delete/:customer_id", api.AccountHandler.DeleteCus)
 
 	//typeroom routes
-	api.Echo.POST("typeRoom/add", api.TypeRoomHandler.AddTypeRoom)
-	api.Echo.GET("typeRoom", api.TypeRoomHandler.ViewTypeRoom)
-	api.Echo.GET("typeRoom/:type_id", api.TypeRoomHandler.ViewDetailTypeRoom)
-	api.Echo.PUT("/typeRoom/:type_id/update", api.TypeRoomHandler.UpdateTypeRoom)
-	api.Echo.PUT("/typeRoom/:type_id/delete", api.TypeRoomHandler.DeleteTypeRoom)
-	api.Echo.GET("/typeRoom/filter", api.TypeRoomHandler.FilterTypeRoom)
+	api.Echo.GET("/room-price", api.TypeRoomHandler.ListPrice)
+	api.Echo.POST("/room-price/:id", api.TypeRoomHandler.UpdatePrice)
 
 	//employee routes
 	api.Echo.POST("employee/create", api.EmployeeHandler.CreateEmployee)

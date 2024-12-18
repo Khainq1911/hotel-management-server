@@ -19,8 +19,14 @@ import (
 
 func main() {
 
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error loading .env file")
+	/* dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		log.Fatal(err)
+	}
+	environmentPath := filepath.Join(dir, ".env")
+	err = godotenv.Load(environmentPath) */
+	if err := godotenv.Load(".env"); err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
 	}
 
 	DB_PORT, err := strconv.Atoi(os.Getenv("DB_PORT"))

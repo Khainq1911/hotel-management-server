@@ -6,6 +6,7 @@ type CreateEmp struct {
 	FullName    string    `json:"full_name" db:"full_name"`
 	Email       string    `json:"email" db:"email"`
 	PhoneNumber string    `json:"phone_number" db:"phone_number"`
+	Password    string    `json:"password" db:"password"`
 	Address     string    `json:"address" db:"address"`
 	Position    string    `json:"position" db:"position"`
 	Salary      float32   `json:"salary" db:"salary"`
@@ -14,7 +15,7 @@ type CreateEmp struct {
 	IdDocument  string    `json:"id_document" db:"id_document"`
 	Status      string    `json:"status" db:"status"`
 	Note        string    `json:"note" db:"note"`
-	CreateBy    string    `json:"createby" db:"createby"`
+	CreateBy    string    `json:"created_by" db:"created_by"`
 }
 
 type Employee struct {
@@ -52,12 +53,12 @@ type DeleteEmp struct {
 }
 
 type Login struct {
-	EmployeeID string `json:"employee_id" db:"employee_id"`
-	FullName    string    `json:"full_name" db:"full_name"`
-	Email       string    `json:"email" db:"email"`
-	PhoneNumber string     `json:"phone_number" db:"phone_number"`
-	PassWord   string `json:"password" db:"password"`
-	IsAdmin    bool   `json:"is_admin" db:"is_admin"`
+	EmployeeID  string `json:"employee_id" db:"employee_id"`
+	FullName    string `json:"full_name" db:"full_name"`
+	Email       string `json:"email" db:"email"`
+	PhoneNumber string `json:"phone_number" db:"phone_number"`
+	PassWord    string `json:"password" db:"password"`
+	IsAdmin     bool   `json:"is_admin" db:"is_admin"`
 }
 type User struct {
 	Username string `json:"username" db:"username"`

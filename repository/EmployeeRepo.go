@@ -34,6 +34,7 @@ func NewEmployeeRepo(sql *database.Sql) EmployeeRepo {
 func (db *EmployeeSql) CreateEmpRepo(ctx context.Context, employee model.CreateEmp) error {
 	query := `  insert into employee (full_name, 
 				email, 
+				password,
 				phone_number, 
 				address, 
 				position, 
@@ -43,13 +44,14 @@ func (db *EmployeeSql) CreateEmpRepo(ctx context.Context, employee model.CreateE
 				id_document,
 				status, 
 				note, 
-				createtime, 
-				createby) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`
+				created_at, 
+				created_by) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`
 	current := time.Now()
 
 	if _, err := db.Sql.Db.Exec(query,
 		employee.FullName,
 		employee.Email,
+		employee.Password,
 		employee.PhoneNumber,
 		employee.Address,
 		employee.Position,
@@ -131,8 +133,8 @@ func (db *EmployeeSql) CheckLogin(ctx context.Context, username string) ([]model
 	if err := db.Sql.Db.Select(&data, query, username); err != nil {
 		return []model.Login{}, err
 	}
-	
-	if len(data) == 0{
+
+	if len(data) == 0 {
 		return []model.Login{}, fmt.Errorf("user is not exist")
 	}
 	return data, nil
